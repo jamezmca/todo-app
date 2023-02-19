@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bungee&family=Noto+Sans:wght@100;200;300;400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css"
+        integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Todos</title>
+    <style>
+        html {
+            font-family: 'Noto sans', sans-serif;
+        }
+
+        h1 {
+            font-family: 'Bungee', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition-duration: 300ms;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #0f172a;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            padding: 24px;
+        }
+
+        header,
+        main,
+        footer {
+            width: 800px;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        main {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex: 1;
+        }
+
+        .plusIcon {
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .plusIcon:hover {
+            color: cyan;
+        }
+
+        #enterTodo {
+            display: none;
+        }
+
+        #enterTodo form {
+            display: flex;
+            align-items: stretch;
+            border: 1px solid skyblue;
+            position: relative;
+
+        }
+
+        #enterTodo form:focus-within {
+            border-color: cyan;
+        }
+
+        #enterTodo input {
+            background: transparent;
+            outline: none;
+            padding: 12px;
+            color: white;
+            flex: 1;
+            border: none;
+            max-width: 100%;
+        }
+
+        #enterTodo button {
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            background: skyblue;
+            border: none;
+            outline: none;
+            padding: 0 12px;
+            color: #0f172a;
+            font-family: 'Bungee', sans-serif;
+            cursor: pointer;
+        }
+
+        #enterTodo button:hover {
+            background: #0f172a;
+            color: skyblue;
+        }
+
+        #todos {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .todoItem {
+            display: flex;
+            align-items: center;
+        }
+
+        .todoItem p {
+            flex: 1;
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            cursor: pointer;
+        }
+
+        .actions i:hover {
+            color: coral;
+        }
+
+        footer {
+            display: grid;
+            place-items: center;
+        }
+
+        footer a {
+            color: inherit;
+        }
+
+        footer i {
+            cursor: pointer;
+        }
+
+        footer i:hover {
+            color: cyan;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Todos</h1>
+        <i id="showEnterTodo" class="fa-solid fa-plus plusIcon"></i>
+    </header>
+    <main>
+        <section id="enterTodo">
+            <form>
+                <input type="text" id="textInput" placeholder="Enter todo" />
+                <button type="input" id="add">Add</button>
+            </form>
+        </section>
+        <section id="todos">
+        </section>
+    </main>
+    <footer>
+        <a href="https://youtube.com/smoljames" target="_blank">
+            <i class="fa-brands fa-youtube"></i>
+        </a>
+    </footer>
+</body>
+<script>
+    let todos = []
+
+    const todosList = document.getElementById('todos')
+    const todoInput = document.getElementById('textInput')
+    const inputBtn = document.getElementById('add')
+    const showEnterTodo = document.getElementById('showEnterTodo')
+    const enterTodo = document.getElementById('enterTodo')
+
+    function showTodoInput() {
+        enterTodo.style.display = 'block'
+    }
+
+    showEnterTodo.addEventListener('click', showTodoInput)
+
+    function addTodo(e) {
+        e.preventDefault()
+        let textValue = todoInput.value
+        todos.push(textValue)
+        todosList.innerHTML = ''
+        renderTodos()
+        todoInput.value = ''
+        enterTodo.style.display = 'none'
+    }
+    inputBtn.addEventListener('click', addTodo)
+
+    function removeTodo(index) {
+        todos = todos.filter((todo, i) => {
+            return i === index ? false : true
+        })
+  
+        renderTodos()
+    }
+
+    function editTodo(index) {
+        const currElementText = document.querySelector(`#todos div:nth-child(${index + 1}) p`).innerText
+        const splicedText = currElementText.slice(3)
+        removeTodo(index)
+        showTodoInput()
+        todoInput.value = splicedText
+    }
+
+
+    function renderTodos() {
+        todosList.innerHTML = ''
+        todos.forEach((todo, i) => {
+            let currentHTML = todosList.innerHTML
+            let newHTML = (
+                `<div class="todoItem">
+                    <p>${i + 1}. ${todo}</p>
+                    <div class="actions">
+                        <i onclick="editTodo(${i})" class="fa-solid fa-pen"></i>
+                        <i onclick="removeTodo(${i})" class="fa-regular fa-trash-can"></i>
+                    </div>
+                </div>`
+            )
+
+            let amendedHTML = currentHTML + newHTML
+            todosList.innerHTML = amendedHTML
+        })
+    }
+
+    renderTodos()
+</script>
+
+</html>
